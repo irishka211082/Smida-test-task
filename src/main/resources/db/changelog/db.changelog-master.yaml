@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - logicalFilePath: classpath:db/changelog/db.changelog-master.yaml
+  - changeSet:
+      id: 1
+      author: irina_holovata
+      changes:
+        - createTable:
+            tableName: shares
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: comment
+                  type: varchar(255)
+              - column:
+                  name: shares_number
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: usreou
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_nominal_value
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: nominal_value
+                  type: DECIMAL(13,4)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: release_date
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: INT
+                  defaultValueComputed: 0
+                  constraints:
+                    nullable: false

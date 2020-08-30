@@ -23,16 +23,16 @@ public class Share {
     @Column(name = "comment")
     private String comment;
 
-    @Column(name = "shares_number")
+    @Column(name = "shares_number", nullable = false)
     private int sharesNumber;
 
-    @Column(name = "erdpou")
+    @Column(name = "erdpou", nullable = false)
     private int erdpou;
 
-    @Column(name = "total_nominal_value")
+    @Column(name = "total_nominal_value", nullable = false)
     private BigDecimal totalNominalValue;
 
-    @Column(name = "nominal_value")
+    @Column(name = "nominal_value", nullable = false)
     private BigDecimal nominalValue;
 
     @CreationTimestamp
@@ -40,5 +40,5 @@ public class Share {
     private Timestamp releaseDate;
 
     @Column(name = "status_is_active")
-    private boolean isActive;
+    private int isActive;
 }
