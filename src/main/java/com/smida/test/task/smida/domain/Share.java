@@ -30,10 +30,10 @@ public class Share {
     private int erdpou;
 
     @Column(name = "total_nominal_value", nullable = false)
-    private BigDecimal totalNominalValue;
+    private double totalNominalValue;
 
     @Column(name = "nominal_value", nullable = false)
-    private BigDecimal nominalValue;
+    private double nominalValue;
 
     @CreationTimestamp
     @Column(name = "release_date")
