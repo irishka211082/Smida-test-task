@@ -1,10 +1,8 @@
 package com.smida.test.task.smida.domain;
 
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
@@ -13,6 +11,7 @@ import java.sql.Timestamp;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Share {
 
     @Id
@@ -35,10 +34,9 @@ public class Share {
     @Column(name = "nominal_value", nullable = false)
     private double nominalValue;
 
-    @CreationTimestamp
     @Column(name = "release_date")
     private Timestamp releaseDate;
 
     @Column(name = "status_is_active")
-    private int isActive;
+    private Status status;
 }

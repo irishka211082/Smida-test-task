@@ -49,3 +49,28 @@ databaseChangeLog:
                   defaultValueComputed: 0
                   constraints:
                     nullable: false
+        - createTable:
+            tableName: shares_history
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: field_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: old_value
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: new_value
+                  type: varchar(255)
+                  constraints:
+                    nullable: false

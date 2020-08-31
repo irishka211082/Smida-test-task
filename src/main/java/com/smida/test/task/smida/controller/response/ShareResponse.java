@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 @Builder
 @AllArgsConstructor
 public class ShareResponse {
+
     private long id;
     private String comment;
     private int sharesNumber;

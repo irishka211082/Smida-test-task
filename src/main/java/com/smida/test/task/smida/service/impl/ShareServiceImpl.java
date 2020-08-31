@@ -1,13 +1,17 @@
 package com.smida.test.task.smida.service.impl;
 
-import com.smida.test.task.smida.domain.Share;
+import com.smida.test.task.smida.controller.utils.UtilOperations;
+import com.smida.test.task.smida.domain.*;
 import com.smida.test.task.smida.repository.ShareRepository;
+import com.smida.test.task.smida.service.ShareHistService;
 import com.smida.test.task.smida.service.ShareService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -15,50 +19,106 @@ import java.util.NoSuchElementException;
 @Service
 public class ShareServiceImpl implements ShareService {
 
+    private final ShareRepository shareRepository;
+    private final ShareHistService shareHistService;
+
     @Autowired
-    private ShareRepository repository;
-
-    @Override
-    public Share create(@NonNull Share share) {
-        share.setIsActive(1);
-        share.setTotalNominalValue(calculateTotalNominalValue(share.getNominalValue(), share.getSharesNumber()));
-
-        return repository.save(share);
+    public ShareServiceImpl(ShareRepository shareRepository, ShareHistServiceImpl shareHistServiceImpl) {
+        this.shareRepository = shareRepository;
+        this.shareHistService = shareHistServiceImpl;
     }
 
     @Override
+    @Transactional
+    public Share create(@NonNull Share share) {
+        share.setStatus(Status.ACTIVE);
+        share.setTotalNominalValue(
+                UtilOperations.calculateTotalNominalValue(
+                        share.getNominalValue(),
+                        share.getSharesNumber()));
+
+        return shareRepository.save(share);
+    }
+
+    @Override
+    @Transactional
     public Share update(long id, @NonNull Share newShare) {
         Share share = findById(id);
 
-        share.setComment(newShare.getComment());
-        share.setNominalValue(newShare.getNominalValue());
-        share.setSharesNumber(newShare.getSharesNumber());
-        share.setTotalNominalValue(newShare.getTotalNominalValue());
-        share.setErdpou(newShare.getErdpou());
-        share.setReleaseDate(newShare.getReleaseDate());
+        List<ChangedShareField> changedShareFields = new ArrayList<>();
 
-        return repository.save(share);
+        if (share.getNominalValue() != newShare.getNominalValue()
+                || share.getSharesNumber() != newShare.getSharesNumber()
+        ) {
+            if (share.getNominalValue() != newShare.getNominalValue()) {
+                changedShareFields.add(new ChangedShareField(
+                        ShareChangedFieldName.NOMINAL_VALUE,
+                        share.getNominalValue(),
+                        newShare.getNominalValue()));
+
+                share.setNominalValue(newShare.getNominalValue());
+            }
+
+            if (share.getSharesNumber() != newShare.getSharesNumber()) {
+                changedShareFields.add(new ChangedShareField(
+                        ShareChangedFieldName.SHARES_NUMBER,
+                        share.getSharesNumber(),
+                        newShare.getSharesNumber()));
+
+                share.setSharesNumber(newShare.getSharesNumber());
+            }
+
+            double totalNominalValue = UtilOperations.calculateTotalNominalValue(
+                    share.getNominalValue(),
+                    share.getSharesNumber());
+
+            changedShareFields.add(new ChangedShareField(
+                    ShareChangedFieldName.TOTAL_NOMINAL_VALUE,
+                    share.getTotalNominalValue(),
+                    totalNominalValue));
+
+            share.setTotalNominalValue(totalNominalValue);
+        }
+
+        if (share.getComment().equals(newShare.getComment())) {
+            changedShareFields.add(new ChangedShareField(
+                    ShareChangedFieldName.COMMENT,
+                    share.getComment(),
+                    newShare.getComment()));
+
+            share.setComment(newShare.getComment());
+        }
+
+        if (share.getReleaseDate().equals(newShare.getReleaseDate())) {
+            changedShareFields.add(new ChangedShareField(
+                    ShareChangedFieldName.RELEASE_DATE,
+                    share.getComment(),
+                    newShare.getComment()));
+
+            share.setReleaseDate(newShare.getReleaseDate());
+        }
+
+        ChangedShareFields changedFields = new ChangedShareFields(changedShareFields);
+        shareHistService.create(changedFields);
+
+        return shareRepository.save(share);
     }
 
     @Override
     public Share findById(long id) {
-        return repository.findById(id).orElseThrow(NoSuchElementException::new);
+        return shareRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     public @NonNull List<Share> getAllShares() {
-        return repository.findAll();
+        return shareRepository.findAll();
     }
 
     @Override
     public Share delete(long id) {
         Share share = findById(id);
-        share.setIsActive(0);
+        share.setStatus(Status.DELETED);
 
-        return repository.save(share);
-    }
-
-    private double calculateTotalNominalValue(double nominalValue, int sharesNumber) {
-        return nominalValue * sharesNumber;
+        return shareRepository.save(share);
     }
 }
