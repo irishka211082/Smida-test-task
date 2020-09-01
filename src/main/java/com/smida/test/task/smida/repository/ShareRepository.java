@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface ShareRepository extends JpaRepository<Share, Long> {
 
+    List<Share> findAll();
+
     List<Share> findAllByErdpou(int erdpou);
 
     List<Share> findAllByStatus(Status status);

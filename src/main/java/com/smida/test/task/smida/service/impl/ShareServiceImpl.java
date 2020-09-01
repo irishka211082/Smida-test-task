@@ -1,10 +1,11 @@
 package com.smida.test.task.smida.service.impl;
 
-import com.smida.test.task.smida.utils.UtilOperations;
 import com.smida.test.task.smida.domain.*;
+import com.smida.test.task.smida.exceptions.NoSharesException;
 import com.smida.test.task.smida.repository.ShareRepository;
 import com.smida.test.task.smida.service.ShareHistService;
 import com.smida.test.task.smida.service.ShareService;
+import com.smida.test.task.smida.utils.UtilOperations;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -31,11 +33,14 @@ public class ShareServiceImpl implements ShareService {
     @Override
     @Transactional
     public Share create(@NonNull Share share) {
+        log.info("Try to create a new share");
+
         share.setStatus(Status.ACTIVE);
         share.setTotalNominalValue(
                 UtilOperations.calculateTotalNominalValue(
                         share.getNominalValue(),
                         share.getSharesNumber()));
+        log.info("A new share was fully completed for saving to db.");
 
         return shareRepository.save(share);
     }
@@ -43,31 +48,39 @@ public class ShareServiceImpl implements ShareService {
     @Override
     @Transactional
     public Share update(long id, @NonNull Share newShare) {
+        log.info("Try to update te share with id {}", id);
+
         Share share = findById(id);
+        log.debug("Find the share with id {} in the database", id);
 
         List<ChangedShareField> changedShareFields = new ArrayList<>();
 
+        log.info("Check, which field of the share will be changed.");
         if (share.getNominalValue() != newShare.getNominalValue()
                 || share.getSharesNumber() != newShare.getSharesNumber()
         ) {
             if (share.getNominalValue() != newShare.getNominalValue()) {
+                log.info("Found that the nominal value will be changed.");
                 changedShareFields.add(new ChangedShareField(
                         ShareChangedFieldName.NOMINAL_VALUE,
                         share.getNominalValue(),
                         newShare.getNominalValue(),
                         share.getErdpou()
                 ));
+                log.debug("The info about the nominal value was prepared for history-table");
 
                 share.setNominalValue(newShare.getNominalValue());
             }
 
             if (share.getSharesNumber() != newShare.getSharesNumber()) {
+                log.info("Found that the shares number will be changed.");
                 changedShareFields.add(new ChangedShareField(
                         ShareChangedFieldName.SHARES_NUMBER,
                         share.getSharesNumber(),
                         newShare.getSharesNumber(),
                         share.getErdpou()
-                        ));
+                ));
+                log.debug("The info about the shares number was prepared for history-table");
 
                 share.setSharesNumber(newShare.getSharesNumber());
             }
@@ -75,70 +88,115 @@ public class ShareServiceImpl implements ShareService {
             double totalNominalValue = UtilOperations.calculateTotalNominalValue(
                     share.getNominalValue(),
                     share.getSharesNumber());
+            log.debug("The total nominal value was calculated for future edited share.");
 
             changedShareFields.add(new ChangedShareField(
                     ShareChangedFieldName.TOTAL_NOMINAL_VALUE,
                     share.getTotalNominalValue(),
                     totalNominalValue,
                     share.getErdpou()
+
             ));
+            log.debug("The info about the total nominal value was prepared for history-table");
 
             share.setTotalNominalValue(totalNominalValue);
         }
 
         if (share.getComment().equals(newShare.getComment())) {
+            log.info("Found that the comment will be changed.");
             changedShareFields.add(new ChangedShareField(
                     ShareChangedFieldName.COMMENT,
                     share.getComment(),
                     newShare.getComment(),
                     share.getErdpou()
             ));
+            log.debug("The info about the comment was prepared for history-table");
 
             share.setComment(newShare.getComment());
         }
 
         if (share.getReleaseDate().equals(newShare.getReleaseDate())) {
+            log.info("Found that the release date will be changed.");
             changedShareFields.add(new ChangedShareField(
                     ShareChangedFieldName.RELEASE_DATE,
                     share.getComment(),
                     newShare.getComment(),
                     share.getErdpou()
             ));
+            log.debug("The info about the release date was prepared for history-table");
 
             share.setReleaseDate(newShare.getReleaseDate());
         }
 
         ChangedShareFields changedFields = new ChangedShareFields(changedShareFields);
-        shareHistService.create(changedFields);
+        shareHistService.addHistory(changedFields);
+        log.debug("The info about the changed fields was added to history table successfully.");
 
-        return shareRepository.save(share);
+        Share addedShare = shareRepository.save(share);
+        log.debug("The share with id {} was added to database successfully.", addedShare.getId());
+        return addedShare;
     }
 
     @Override
     public Share findById(long id) {
-        return shareRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        log.info("Try to find the share by id {}", id);
+
+        Share share = shareRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        log.debug("The share with id {} was found in the database.", id);
+
+        return share;
     }
 
     @Override
     public @NonNull List<Share> getAllShares() {
-        return shareRepository.findAll();
+        log.info("Try to get all shares.");
+
+        List<Share> shares = shareRepository.findAll();
+        if (Objects.nonNull(shares)) {
+            log.debug("The list of shares got from the database successfully.");
+        } else {
+            throw new NoSharesException();
+        }
+        return shares;
     }
 
     @Override
     public List<Share> getAllShares(int erdpou) {
-        return shareRepository.findAllByErdpou(erdpou);
+        log.info("Try to get all shares with the erdpou {}.", erdpou);
+
+        List<Share> shares = shareRepository.findAllByErdpou(erdpou);
+        if (Objects.nonNull(shares)) {
+            log.debug("The list of shares with the erdpou {} got from database successfully.", erdpou);
+        } else {
+            log.debug("There are no shares with the erdpou {}!", erdpou);
+            throw new NoSharesException();
+        }
+        return shares;
     }
 
     @Override
     public List<Share> getAllShares(Status status) {
-        return shareRepository.findAllByStatus(status);
+        log.info("Try to get all shares with the status {}.", status);
+
+        List<Share> shares = shareRepository.findAllByStatus(status);
+        if (Objects.nonNull(shares)) {
+            log.debug("The list of shares with the status {} got from database successfully.", status);
+        } else {
+            log.debug("There are no shares with the status {}!", status);
+            throw new NoSharesException();
+        }
+        return shares;
     }
 
     @Override
     public Share delete(long id) {
+        log.info("Try to delete the share by id {}", id);
+
         Share share = findById(id);
         share.setStatus(Status.DELETED);
+        Share deletedShare = shareRepository.save(share);
+        log.debug("The status of share with id {} was changed from ACTIVE to DELETED.", id);
 
-        return shareRepository.save(share);
+        return deletedShare;
     }
 }

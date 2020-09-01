@@ -16,6 +16,16 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new GeneralException(("There is no share with such id")), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(NoSharesException.class)
+    protected ResponseEntity<GeneralException> handleNoSharesException() {
+        return new ResponseEntity<>(new GeneralException(("There are no shares!")), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoHistsException.class)
+    protected ResponseEntity<GeneralException> handleNoHistsException() {
+        return new ResponseEntity<>(new GeneralException(("There are no hists!")), HttpStatus.NOT_FOUND);
+    }
+
     @Data
     @AllArgsConstructor
     private static class GeneralException {

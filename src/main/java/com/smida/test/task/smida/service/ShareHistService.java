@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ShareHistService {
 
-    void create(@NonNull ChangedShareFields changedFields);
+    void addHistory(@NonNull ChangedShareFields changedFields);
 
     List<ShareHist> getAllHists();
 

@@ -1,11 +1,11 @@
 package com.smida.test.task.smida.controller;
 
-import com.smida.test.task.smida.converter.ShareRequestCreateToShareConverter;
-import com.smida.test.task.smida.converter.ShareRequestUpdateToShareConverter;
-import com.smida.test.task.smida.converter.ShareToShareResponseConverter;
 import com.smida.test.task.smida.controller.request.ShareRequestCreate;
 import com.smida.test.task.smida.controller.request.ShareRequestUpdate;
 import com.smida.test.task.smida.controller.response.ShareResponse;
+import com.smida.test.task.smida.converter.ShareRequestCreateToShareConverter;
+import com.smida.test.task.smida.converter.ShareRequestUpdateToShareConverter;
+import com.smida.test.task.smida.converter.ShareToShareResponseConverter;
 import com.smida.test.task.smida.domain.Status;
 import com.smida.test.task.smida.service.ShareService;
 import lombok.extern.slf4j.Slf4j;

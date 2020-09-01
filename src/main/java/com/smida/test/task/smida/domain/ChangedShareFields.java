@@ -13,5 +13,5 @@ import java.util.List;
 @Data
 public class ChangedShareFields {
 
-    private List<ChangedShareField> shares;
+    private List<ChangedShareField> changedShareFields;
 }
