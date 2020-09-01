@@ -14,4 +14,5 @@ public class ChangedShareField {
     private ShareChangedFieldName fieldName;
     private Object oldValue;
     private Object newValue;
+    private int erdpou;
 }

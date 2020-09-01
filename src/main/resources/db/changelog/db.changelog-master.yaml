@@ -60,6 +60,11 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
+                  name: usreou
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
                   name: field_name
                   type: varchar(255)
                   constraints:

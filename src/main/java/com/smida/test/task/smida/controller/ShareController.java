@@ -1,11 +1,12 @@
 package com.smida.test.task.smida.controller;
 
-import com.smida.test.task.smida.controller.converter.ShareRequestCreateToShareConverter;
-import com.smida.test.task.smida.controller.converter.ShareRequestUpdateToShareConverter;
-import com.smida.test.task.smida.controller.converter.ShareToShareResponseConverter;
+import com.smida.test.task.smida.converter.ShareRequestCreateToShareConverter;
+import com.smida.test.task.smida.converter.ShareRequestUpdateToShareConverter;
+import com.smida.test.task.smida.converter.ShareToShareResponseConverter;
 import com.smida.test.task.smida.controller.request.ShareRequestCreate;
 import com.smida.test.task.smida.controller.request.ShareRequestUpdate;
 import com.smida.test.task.smida.controller.response.ShareResponse;
+import com.smida.test.task.smida.domain.Status;
 import com.smida.test.task.smida.service.ShareService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,24 @@ public class ShareController {
     public ResponseEntity<List<ShareResponse>> getShares() {
         return new ResponseEntity<>(
                 shareService.getAllShares().stream()
+                        .map(ShareToShareResponseConverter::convert)
+                        .collect(Collectors.toList()),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("{erdpou}")
+    public ResponseEntity<List<ShareResponse>> getSharesByErdpou(@PathVariable @Positive int erdpou) {
+        return new ResponseEntity<>(
+                shareService.getAllShares(erdpou).stream()
+                        .map(ShareToShareResponseConverter::convert)
+                        .collect(Collectors.toList()),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("{status}")
+    public ResponseEntity<List<ShareResponse>> getSharesByStatus(@PathVariable Status status) {
+        return new ResponseEntity<>(
+                shareService.getAllShares(status).stream()
                         .map(ShareToShareResponseConverter::convert)
                         .collect(Collectors.toList()),
                 HttpStatus.OK);

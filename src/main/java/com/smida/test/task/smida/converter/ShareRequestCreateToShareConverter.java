@@ -1,7 +1,7 @@
-package com.smida.test.task.smida.controller.converter;
+package com.smida.test.task.smida.converter;
 
 import com.smida.test.task.smida.controller.request.ShareRequestCreate;
-import com.smida.test.task.smida.controller.utils.UtilOperations;
+import com.smida.test.task.smida.utils.UtilOperations;
 import com.smida.test.task.smida.domain.Share;
 
 public class ShareRequestCreateToShareConverter {

@@ -1,6 +1,6 @@
 package com.smida.test.task.smida.service.impl;
 
-import com.smida.test.task.smida.controller.utils.UtilOperations;
+import com.smida.test.task.smida.utils.UtilOperations;
 import com.smida.test.task.smida.domain.*;
 import com.smida.test.task.smida.repository.ShareRepository;
 import com.smida.test.task.smida.service.ShareHistService;
@@ -54,7 +54,9 @@ public class ShareServiceImpl implements ShareService {
                 changedShareFields.add(new ChangedShareField(
                         ShareChangedFieldName.NOMINAL_VALUE,
                         share.getNominalValue(),
-                        newShare.getNominalValue()));
+                        newShare.getNominalValue(),
+                        share.getErdpou()
+                ));
 
                 share.setNominalValue(newShare.getNominalValue());
             }
@@ -63,7 +65,9 @@ public class ShareServiceImpl implements ShareService {
                 changedShareFields.add(new ChangedShareField(
                         ShareChangedFieldName.SHARES_NUMBER,
                         share.getSharesNumber(),
-                        newShare.getSharesNumber()));
+                        newShare.getSharesNumber(),
+                        share.getErdpou()
+                        ));
 
                 share.setSharesNumber(newShare.getSharesNumber());
             }
@@ -75,7 +79,9 @@ public class ShareServiceImpl implements ShareService {
             changedShareFields.add(new ChangedShareField(
                     ShareChangedFieldName.TOTAL_NOMINAL_VALUE,
                     share.getTotalNominalValue(),
-                    totalNominalValue));
+                    totalNominalValue,
+                    share.getErdpou()
+            ));
 
             share.setTotalNominalValue(totalNominalValue);
         }
@@ -84,7 +90,9 @@ public class ShareServiceImpl implements ShareService {
             changedShareFields.add(new ChangedShareField(
                     ShareChangedFieldName.COMMENT,
                     share.getComment(),
-                    newShare.getComment()));
+                    newShare.getComment(),
+                    share.getErdpou()
+            ));
 
             share.setComment(newShare.getComment());
         }
@@ -93,7 +101,9 @@ public class ShareServiceImpl implements ShareService {
             changedShareFields.add(new ChangedShareField(
                     ShareChangedFieldName.RELEASE_DATE,
                     share.getComment(),
-                    newShare.getComment()));
+                    newShare.getComment(),
+                    share.getErdpou()
+            ));
 
             share.setReleaseDate(newShare.getReleaseDate());
         }
@@ -112,6 +122,16 @@ public class ShareServiceImpl implements ShareService {
     @Override
     public @NonNull List<Share> getAllShares() {
         return shareRepository.findAll();
+    }
+
+    @Override
+    public List<Share> getAllShares(int erdpou) {
+        return shareRepository.findAllByErdpou(erdpou);
+    }
+
+    @Override
+    public List<Share> getAllShares(Status status) {
+        return shareRepository.findAllByStatus(status);
     }
 
     @Override

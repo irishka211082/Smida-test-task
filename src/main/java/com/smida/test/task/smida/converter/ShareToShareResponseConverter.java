@@ -1,4 +1,4 @@
-package com.smida.test.task.smida.controller.converter;
+package com.smida.test.task.smida.converter;
 
 import com.smida.test.task.smida.controller.response.ShareResponse;
 import com.smida.test.task.smida.domain.Share;

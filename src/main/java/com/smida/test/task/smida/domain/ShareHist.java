@@ -18,6 +18,9 @@ public class ShareHist {
     @Column(name = "id")
     private long id;
 
+    @Column(name = "erdpou", nullable = false)
+    private int erdpou;
+
     @Column(name = "field_name")
     private String name;
 

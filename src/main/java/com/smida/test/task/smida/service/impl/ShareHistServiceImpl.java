@@ -1,6 +1,6 @@
 package com.smida.test.task.smida.service.impl;
 
-import com.smida.test.task.smida.controller.converter.ChangedShareFieldToShareHistConverter;
+import com.smida.test.task.smida.converter.ChangedShareFieldToShareHistConverter;
 import com.smida.test.task.smida.domain.ChangedShareField;
 import com.smida.test.task.smida.domain.ChangedShareFields;
 import com.smida.test.task.smida.domain.ShareHist;
@@ -37,5 +37,15 @@ public class ShareHistServiceImpl implements ShareHistService {
             shareHists.add(hist);
         }
         histRepository.saveAll(shareHists);
+    }
+
+    @Override
+    public List<ShareHist> getAllHists() {
+        return histRepository.findAll();
+    }
+
+    @Override
+    public List<ShareHist> getAllHistsByErdpou(int erdpou) {
+        return histRepository.findAllByErdpou(erdpou);
     }
 }
