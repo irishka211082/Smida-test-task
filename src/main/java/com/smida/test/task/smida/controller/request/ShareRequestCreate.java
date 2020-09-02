@@ -1,5 +1,7 @@
 package com.smida.test.task.smida.controller.request;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +15,6 @@ import java.sql.Timestamp;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class ShareRequestCreate {
 
     @NotNull
@@ -30,4 +31,19 @@ public class ShareRequestCreate {
     private double nominalValue;
 
     private Timestamp releaseDate;
+
+    @JsonCreator
+    public ShareRequestCreate(
+            @JsonProperty("comment") String comment,
+            @JsonProperty("shares number") int sharesNumber,
+            @JsonProperty("erdpou") int erdpou,
+            @JsonProperty("nominal value") double nominalValue,
+            @JsonProperty("releaseDate") Timestamp releaseDate) {
+        this.comment = comment;
+        this.sharesNumber = sharesNumber;
+        this.erdpou = erdpou;
+        this.nominalValue = nominalValue;
+        this.releaseDate = releaseDate;
+    }
 }
+

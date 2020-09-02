@@ -1,0 +1,23 @@
+[
+  {
+    "comment": "Shares of Apple",
+    "sharesNumber": "100",
+    "erdpou": "90909090",
+    "nominalValue": "100.05",
+    "releaseDate": "19900510"
+  },
+  {
+    "comment": "Shares of Amazon",
+    "sharesNumber": "500",
+    "erdpou": "80808080",
+    "nominalValue": "500.76",
+    "releaseDate": "20000115"
+  },
+  {
+    "comment": "Shares of Mersedes",
+    "sharesNumber": "400",
+    "erdpou": "70707070",
+    "nominalValue": "50.51",
+    "releaseDate": "19780217"
+  }
+]
