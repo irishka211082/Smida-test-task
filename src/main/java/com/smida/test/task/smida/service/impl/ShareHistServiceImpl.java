@@ -3,6 +3,7 @@ package com.smida.test.task.smida.service.impl;
 import com.smida.test.task.smida.converter.ChangedShareFieldToShareHistConverter;
 import com.smida.test.task.smida.domain.ChangedShareField;
 import com.smida.test.task.smida.domain.ChangedShareFields;
+import com.smida.test.task.smida.domain.Share;
 import com.smida.test.task.smida.domain.ShareHist;
 import com.smida.test.task.smida.exceptions.NoHistsException;
 import com.smida.test.task.smida.repository.HistRepository;
@@ -10,6 +11,9 @@ import com.smida.test.task.smida.service.ShareHistService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -58,6 +62,20 @@ public class ShareHistServiceImpl implements ShareHistService {
         }
         return hists;
     }
+
+    @Override
+    public List<ShareHist> getAllHists(@PageableDefault PageRequest pageRequest) {
+        log.info("Try to get all records from history-table.");
+        Page<ShareHist> histPage = histRepository.findAll(pageRequest);
+        List<ShareHist> hists = histPage.getContent();
+        if (Objects.nonNull(hists)) {
+            log.debug("The list of hists got from the database successfully.");
+        } else {
+            throw new NoHistsException();
+        }
+        return hists;
+    }
+
 
     @Override
     public List<ShareHist> getAllHistsByErdpou(int erdpou) {

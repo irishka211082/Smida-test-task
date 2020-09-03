@@ -3,6 +3,8 @@ package com.smida.test.task.smida.service;
 import com.smida.test.task.smida.domain.Share;
 import com.smida.test.task.smida.domain.Status;
 import lombok.NonNull;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PageableDefault;
 
 import java.util.List;
 
@@ -16,6 +18,8 @@ public interface ShareService {
 
     @NonNull
     List<Share> getAllShares();
+
+    List<Share> getAllShares(@PageableDefault PageRequest pageRequest);
 
     List<Share> getAllShares(int erdpou);
 

@@ -8,6 +8,9 @@ import com.smida.test.task.smida.utils.UtilOperations;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -87,6 +90,20 @@ public class ShareServiceImpl implements ShareService {
         }
         return shares;
     }
+
+    @Override
+    public @NonNull List<Share> getAllShares(@PageableDefault PageRequest pageRequest) {
+        log.info("Try to get all shares.");
+        Page<Share> sharePage = shareRepository.findAll(pageRequest);
+        List<Share> shares = sharePage.getContent();
+        if (Objects.nonNull(shares)) {
+            log.debug("The list of shares got from the database successfully.");
+        } else {
+            throw new NoSharesException();
+        }
+        return shares;
+    }
+
 
     @Override
     public List<Share> getAllShares(int erdpou) {
