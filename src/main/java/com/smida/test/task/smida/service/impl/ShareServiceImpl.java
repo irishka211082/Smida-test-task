@@ -14,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -176,7 +177,7 @@ public class ShareServiceImpl implements ShareService {
     }
 
     private void updateTotalNominalValue(List<ChangedShareField> changedShareFields, Share share) {
-        double totalNominalValue = UtilOperations.calculateTotalNominalValue(
+        BigDecimal totalNominalValue = UtilOperations.calculateTotalNominalValue(
                 share.getNominalValue(),
                 share.getSharesNumber());
         log.debug("The total nominal value was calculated for future edited share.");

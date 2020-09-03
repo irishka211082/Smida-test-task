@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -148,7 +149,7 @@ class ShareServiceImplTest {
                 .sharesNumber(10)
                 .erdpou(10010010)
                 .nominalValue(100.01)
-                .totalNominalValue(1000.10)
+                .totalNominalValue(new BigDecimal(1000.10))
                 .releaseDate(new Timestamp(20001004))
                 .id(1)
                 .status(Status.ACTIVE)

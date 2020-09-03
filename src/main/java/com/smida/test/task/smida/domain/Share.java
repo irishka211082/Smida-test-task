@@ -3,6 +3,7 @@ package com.smida.test.task.smida.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
@@ -29,7 +30,7 @@ public class Share {
     private int erdpou;
 
     @Column(name = "total_nominal_value", nullable = false)
-    private double totalNominalValue;
+    private BigDecimal totalNominalValue;
 
     @Column(name = "nominal_value", nullable = false)
     private double nominalValue;

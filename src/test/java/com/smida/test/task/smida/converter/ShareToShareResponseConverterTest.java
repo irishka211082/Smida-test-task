@@ -4,6 +4,7 @@ import com.smida.test.task.smida.controller.response.ShareResponse;
 import com.smida.test.task.smida.domain.Share;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,7 +33,7 @@ class ShareToShareResponseConverterTest {
                 .releaseDate(new Timestamp(20001023))
                 .sharesNumber(100)
                 .nominalValue(200.00)
-                .totalNominalValue(20000.00)
+                .totalNominalValue(new BigDecimal(20000.00))
                 .build();
     }
 
@@ -44,7 +45,7 @@ class ShareToShareResponseConverterTest {
                 .releaseDate(new Timestamp(20001023))
                 .sharesNumber(100)
                 .nominalValue(200.00)
-                .totalNominalValue(20000.00)
+                .totalNominalValue(new BigDecimal(20000.00))
                 .build();
 
     }

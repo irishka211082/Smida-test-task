@@ -16,7 +16,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: comment
-                  type: varchar(255)
+                  type: varchar(100)
               - column:
                   name: shares_number
                   type: INT
@@ -29,7 +29,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: total_nominal_value
-                  type: INT
+                  type: DECIMAL
                   constraints:
                     nullable: false
               - column:
@@ -65,16 +65,16 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: field_name
-                  type: varchar(255)
+                  type: varchar(30)
                   constraints:
                     nullable: false
               - column:
                   name: old_value
-                  type: varchar(255)
+                  type: varchar(100)
                   constraints:
                     nullable: false
               - column:
                   name: new_value
-                  type: varchar(255)
+                  type: varchar(100)
                   constraints:
                     nullable: false

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Data
@@ -17,7 +18,7 @@ public class ShareResponse {
     private String comment;
     private int sharesNumber;
     private int erdpou;
-    private double totalNominalValue;
+    private BigDecimal totalNominalValue;
     private double nominalValue;
     private Timestamp releaseDate;
 }

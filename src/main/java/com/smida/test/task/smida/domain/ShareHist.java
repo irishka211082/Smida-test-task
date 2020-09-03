@@ -12,6 +12,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class ShareHist {
 
     @Id
@@ -30,21 +31,4 @@ public class ShareHist {
 
     @Column(name = "new_value", nullable = false)
     private String newValue;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ShareHist)) return false;
-        ShareHist shareHist = (ShareHist) o;
-        return id == shareHist.id &&
-                erdpou == shareHist.erdpou &&
-                Objects.equals(name, shareHist.name) &&
-                Objects.equals(oldValue, shareHist.oldValue) &&
-                Objects.equals(newValue, shareHist.newValue);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, erdpou, name, oldValue, newValue);
-    }
 }
