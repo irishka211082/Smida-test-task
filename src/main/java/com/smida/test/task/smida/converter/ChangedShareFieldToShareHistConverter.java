@@ -9,8 +9,8 @@ public class ChangedShareFieldToShareHistConverter {
         return ShareHist.builder()
                 .erdpou(changedShareField.getErdpou())
                 .name(changedShareField.getFieldName().name())
-                .oldValue(changedShareField.getNewValue().toString())
-                .newValue(changedShareField.getOldValue().toString())
+                .oldValue(changedShareField.getOldValue().toString())
+                .newValue(changedShareField.getNewValue().toString())
                 .build();
     }
 }

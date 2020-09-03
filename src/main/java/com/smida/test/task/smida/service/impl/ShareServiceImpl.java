@@ -3,7 +3,6 @@ package com.smida.test.task.smida.service.impl;
 import com.smida.test.task.smida.domain.*;
 import com.smida.test.task.smida.exceptions.NoSharesException;
 import com.smida.test.task.smida.repository.ShareRepository;
-import com.smida.test.task.smida.service.ShareHistService;
 import com.smida.test.task.smida.service.ShareService;
 import com.smida.test.task.smida.utils.UtilOperations;
 import lombok.NonNull;
@@ -22,7 +21,7 @@ import java.util.Objects;
 public class ShareServiceImpl implements ShareService {
 
     private final ShareRepository shareRepository;
-    private final ShareHistService shareHistService;
+    private final ShareHistServiceImpl shareHistService;
 
     @Autowired
     public ShareServiceImpl(ShareRepository shareRepository, ShareHistServiceImpl shareHistServiceImpl) {
@@ -53,84 +52,13 @@ public class ShareServiceImpl implements ShareService {
         Share share = findById(id);
         log.debug("Find the share with id {} in the database", id);
 
-        List<ChangedShareField> changedShareFields = new ArrayList<>();
+        log.info("Try to get all changed fields");
 
-        log.info("Check, which field of the share will be changed.");
-        if (share.getNominalValue() != newShare.getNominalValue()
-                || share.getSharesNumber() != newShare.getSharesNumber()
-        ) {
-            if (share.getNominalValue() != newShare.getNominalValue()) {
-                log.info("Found that the nominal value will be changed.");
-                changedShareFields.add(new ChangedShareField(
-                        ShareChangedFieldName.NOMINAL_VALUE,
-                        share.getNominalValue(),
-                        newShare.getNominalValue(),
-                        share.getErdpou()
-                ));
-                log.debug("The info about the nominal value was prepared for history-table");
-
-                share.setNominalValue(newShare.getNominalValue());
-            }
-
-            if (share.getSharesNumber() != newShare.getSharesNumber()) {
-                log.info("Found that the shares number will be changed.");
-                changedShareFields.add(new ChangedShareField(
-                        ShareChangedFieldName.SHARES_NUMBER,
-                        share.getSharesNumber(),
-                        newShare.getSharesNumber(),
-                        share.getErdpou()
-                ));
-                log.debug("The info about the shares number was prepared for history-table");
-
-                share.setSharesNumber(newShare.getSharesNumber());
-            }
-
-            double totalNominalValue = UtilOperations.calculateTotalNominalValue(
-                    share.getNominalValue(),
-                    share.getSharesNumber());
-            log.debug("The total nominal value was calculated for future edited share.");
-
-            changedShareFields.add(new ChangedShareField(
-                    ShareChangedFieldName.TOTAL_NOMINAL_VALUE,
-                    share.getTotalNominalValue(),
-                    totalNominalValue,
-                    share.getErdpou()
-
-            ));
-            log.debug("The info about the total nominal value was prepared for history-table");
-
-            share.setTotalNominalValue(totalNominalValue);
-        }
-
-        if (share.getComment().equals(newShare.getComment())) {
-            log.info("Found that the comment will be changed.");
-            changedShareFields.add(new ChangedShareField(
-                    ShareChangedFieldName.COMMENT,
-                    share.getComment(),
-                    newShare.getComment(),
-                    share.getErdpou()
-            ));
-            log.debug("The info about the comment was prepared for history-table");
-
-            share.setComment(newShare.getComment());
-        }
-
-        if (share.getReleaseDate().equals(newShare.getReleaseDate())) {
-            log.info("Found that the release date will be changed.");
-            changedShareFields.add(new ChangedShareField(
-                    ShareChangedFieldName.RELEASE_DATE,
-                    share.getComment(),
-                    newShare.getComment(),
-                    share.getErdpou()
-            ));
-            log.debug("The info about the release date was prepared for history-table");
-
-            share.setReleaseDate(newShare.getReleaseDate());
-        }
-
+        List<ChangedShareField> changedShareFields = getChangedFields(share, newShare);
         ChangedShareFields changedFields = new ChangedShareFields(changedShareFields);
+
         shareHistService.addHistory(changedFields);
-        log.debug("The info about the changed fields was added to history table successfully.");
+        log.debug("The info about changed fields was added to history table successfully.");
 
         Share addedShare = shareRepository.save(share);
         log.debug("The share with id {} was added to database successfully.", addedShare.getId());
@@ -198,5 +126,109 @@ public class ShareServiceImpl implements ShareService {
         log.debug("The status of share with id {} was changed from ACTIVE to DELETED.", id);
 
         return deletedShare;
+    }
+
+    private void checkNominalValue(List<ChangedShareField> changedShareFields, Share share, Share newShare) {
+        if (share.getNominalValue() != newShare.getNominalValue()) {
+            log.info("Found that the nominal value will be changed.");
+            changedShareFields.add(new ChangedShareField(
+                    FieldName.NOMINAL_VALUE,
+                    share.getNominalValue(),
+                    newShare.getNominalValue(),
+                    share.getErdpou()
+            ));
+            log.debug("The info about the nominal value was prepared for history-table");
+
+            share.setNominalValue(newShare.getNominalValue());
+        }
+    }
+
+    private void checkSharesNumber(List<ChangedShareField> changedShareFields, Share share, Share newShare) {
+        if (share.getSharesNumber() != newShare.getSharesNumber()) {
+            log.info("Found that the shares number will be changed.");
+            changedShareFields.add(new ChangedShareField(
+                    FieldName.SHARES_NUMBER,
+                    share.getSharesNumber(),
+                    newShare.getSharesNumber(),
+                    share.getErdpou()
+            ));
+            log.debug("The info about the shares number was prepared for history-table");
+
+            share.setSharesNumber(newShare.getSharesNumber());
+        }
+    }
+
+    private void updateTotalNominalValue(List<ChangedShareField> changedShareFields, Share share) {
+        double totalNominalValue = UtilOperations.calculateTotalNominalValue(
+                share.getNominalValue(),
+                share.getSharesNumber());
+        log.debug("The total nominal value was calculated for future edited share.");
+
+        changedShareFields.add(new ChangedShareField(
+                FieldName.TOTAL_NOMINAL_VALUE,
+                share.getTotalNominalValue(),
+                totalNominalValue,
+                share.getErdpou()
+
+        ));
+        log.debug("The info about the total nominal value was prepared for history-table");
+
+        share.setTotalNominalValue(totalNominalValue);
+    }
+
+    private void checkComment(List<ChangedShareField> changedShareFields, Share share, Share newShare) {
+        if (share.getComment().equals(newShare.getComment())) {
+            log.info("Found that the comment will be changed.");
+            changedShareFields.add(new ChangedShareField(
+                    FieldName.COMMENT,
+                    share.getComment(),
+                    newShare.getComment(),
+                    share.getErdpou()
+            ));
+            log.debug("The info about the comment was prepared for history-table");
+
+            share.setComment(newShare.getComment());
+        }
+    }
+
+    private void checkReleaseDate(List<ChangedShareField> changedShareFields, Share share, Share newShare) {
+        if (share.getReleaseDate().equals(newShare.getReleaseDate())) {
+            log.info("Found that the release date will be changed.");
+            changedShareFields.add(new ChangedShareField(
+                    FieldName.RELEASE_DATE,
+                    share.getComment(),
+                    newShare.getComment(),
+                    share.getErdpou()
+            ));
+            log.debug("The info about the release date was prepared for history-table");
+
+            share.setReleaseDate(newShare.getReleaseDate());
+        }
+    }
+
+    private List<ChangedShareField> getChangedFields(Share share, Share newShare) {
+        List<ChangedShareField> changedShareFields = new ArrayList<>();
+
+        log.info("Check, which field of the share will be changed.");
+        if (share.getNominalValue() != newShare.getNominalValue()
+                || share.getSharesNumber() != newShare.getSharesNumber()
+        ) {
+            log.info("Check, if the nominal value will be changed.");
+            checkNominalValue(changedShareFields, share, newShare);
+
+            log.info("Check, if the shares number will be changed.");
+            checkSharesNumber(changedShareFields, share, newShare);
+
+            log.info("Try to update the total nominal value.");
+            updateTotalNominalValue(changedShareFields, share);
+        }
+
+        log.info("Check, if the comment will be changed.");
+        checkComment(changedShareFields, share, newShare);
+
+        log.info("Check, if the release date will be changed.");
+        checkReleaseDate(changedShareFields, share, newShare);
+
+        return changedShareFields;
     }
 }

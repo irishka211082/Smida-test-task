@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class ChangedShareField {
 
-    private ShareChangedFieldName fieldName;
+    private FieldName fieldName;
     private Object oldValue;
     private Object newValue;
     private int erdpou;

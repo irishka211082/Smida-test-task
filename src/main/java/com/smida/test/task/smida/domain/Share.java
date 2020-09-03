@@ -37,6 +37,7 @@ public class Share {
     @Column(name = "release_date")
     private Timestamp releaseDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status_is_active")
     private Status status;
 }

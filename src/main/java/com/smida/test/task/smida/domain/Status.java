@@ -1,6 +1,7 @@
 package com.smida.test.task.smida.domain;
 
 public enum Status {
+
     ACTIVE(1),
     DELETED(0);
 

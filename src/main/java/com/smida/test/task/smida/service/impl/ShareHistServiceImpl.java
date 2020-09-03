@@ -28,7 +28,7 @@ public class ShareHistServiceImpl implements ShareHistService {
     }
 
     @Override
-    public void addHistory(@NonNull ChangedShareFields changedFields) {
+    public List<ShareHist> addHistory(@NonNull ChangedShareFields changedFields) {
         log.info("Try to add new history to database.");
 
         List<ShareHist> shareHists = new ArrayList<>();
@@ -41,8 +41,9 @@ public class ShareHistServiceImpl implements ShareHistService {
             shareHists.add(hist);
             log.debug("Changed share field was prepared for adding to db.");
         }
-        histRepository.saveAll(shareHists);
+        List<ShareHist> shareHistsAdded = histRepository.saveAll(shareHists);
         log.debug("All changed fields was added successfully to hist-table.");
+        return shareHistsAdded;
     }
 
     @Override
