@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -31,7 +34,7 @@ class ShareServiceImplTest {
     private ShareRepository shareRepository;
 
     @Mock
-    private ShareHistServiceImpl shareHistService;
+    private Pageable pageableMock;
 
     @BeforeEach
     public void setUp() {
@@ -76,54 +79,58 @@ class ShareServiceImplTest {
 
     @Test
     public void getAllShares() {
-        when(shareRepository.findAll()).thenReturn(prepareSharesFromRepository());
-        List<Share> actualShares = shareService.getAllShares();
+        Page<Share> expectedPageOfShares = new PageImpl<>(prepareSharesFromRepository());
 
-        assertEquals(actualShares.size(), 3);
+        when(shareRepository.findAll(pageableMock)).thenReturn(expectedPageOfShares);
+        Page<Share> actualPageOfShares = shareService.getAllShares(pageableMock);
+
+        assertEquals(actualPageOfShares.stream().count(), expectedPageOfShares.stream().count());
     }
 
     @Test
     public void getAllSharesWhenDBIsEmpty() {
-        when(shareRepository.findAll()).thenThrow(new NoSharesException());
+        when(shareRepository.findAll(pageableMock)).thenThrow(new NoSharesException());
 
         assertThrows(NoSharesException.class, () -> {
-            shareService.getAllShares();
+            shareService.getAllShares(pageableMock);
         });
     }
 
     @Test
     public void getAllSharesByErdpou() {
-        when(shareRepository.findAllByErdpou(10010010)).thenReturn(prepareSharesFromRepository());
-        List<Share> actualShares = shareService.getAllShares(10010010);
+        Page<Share> expectedPageOfShares = new PageImpl<>(prepareSharesFromRepository());
+        when(shareRepository.findAllByErdpou(10010010, pageableMock)).thenReturn(expectedPageOfShares);
+        Page<Share> actualPageOfShares = shareService.getAllSharesByErdpou(10010010, pageableMock);
 
-        assertEquals(actualShares.size(), 3);
+        assertEquals(expectedPageOfShares.stream().count(), actualPageOfShares.stream().count());
     }
 
     @Test
     public void getAllSharesByErdpouWhenItDoesntExist() {
 
-        when(shareRepository.findAllByErdpou(10010010)).thenThrow(new NoSharesException());
+        when(shareRepository.findAllByErdpou(10010010, pageableMock)).thenThrow(new NoSharesException());
 
         assertThrows(NoSharesException.class, () -> {
-            shareService.getAllShares(10010010);
+            shareService.getAllSharesByErdpou(10010010, pageableMock);
         });
     }
 
     @Test
     public void getAllSharesByStatus() {
-        when(shareRepository.findAllByStatus(Status.ACTIVE)).thenReturn(prepareSharesFromRepository());
-        List<Share> actualShares = shareService.getAllShares(Status.ACTIVE);
+        Page<Share> expectedPageOfShares = new PageImpl<>(prepareSharesFromRepository());
+        when(shareRepository.findAllByStatus(Status.ACTIVE, pageableMock)).thenReturn(expectedPageOfShares);
+        Page<Share> actualPageOfShares = shareService.getAllSharesByStatus(Status.ACTIVE, pageableMock);
 
-        assertEquals(actualShares.size(), 3);
+        assertEquals(actualPageOfShares.stream().count(), expectedPageOfShares.stream().count());
     }
 
     @Test
     public void getAllSharesByStatusWhenItDoesntExist() {
 
-        when(shareRepository.findAllByStatus(Status.DELETED)).thenThrow(new NoSharesException());
+        when(shareRepository.findAllByStatus(Status.DELETED, pageableMock)).thenThrow(new NoSharesException());
 
         assertThrows(NoSharesException.class, () -> {
-            shareService.getAllShares(Status.DELETED);
+            shareService.getAllSharesByStatus(Status.DELETED, pageableMock);
         });
     }
 

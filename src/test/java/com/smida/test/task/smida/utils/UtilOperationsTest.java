@@ -10,8 +10,10 @@ class UtilOperationsTest {
 
     @Test
     public void calculateTotalNominalValue() {
-        BigDecimal expectedTotalNominalValue = new BigDecimal(100.10);
-        BigDecimal actualTotalNominalValue = UtilOperations.calculateTotalNominalValue(50.05, 2);
+        double nominalValue = 50.05;
+        int shareNumber = 2;
+        BigDecimal expectedTotalNominalValue = new BigDecimal(nominalValue).multiply(new BigDecimal(shareNumber));
+        BigDecimal actualTotalNominalValue = UtilOperations.calculateTotalNominalValue(nominalValue, shareNumber);
 
         assertEquals(expectedTotalNominalValue, actualTotalNominalValue);
     }
